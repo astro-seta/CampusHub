@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}New Event — CampusHub{% endblock %}
+
+{% block content %}
+
+<div style="max-width:560px; margin:0 auto;">
+    <h1 class="page-title mb-1">Create an Event</h1>
+    <p class="page-subtitle">Schedule a new event for your club.</p>
+
+    <div class="card">
+        <form method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label>{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <p style="color:var(--danger); font-size:0.8rem; margin-top:0.3rem;">{{ field.errors.0 }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <div class="divider"></div>
+            <div class="flex gap-3">
+                <button type="submit" class="btn btn-primary">Create Event</button>
+                <a href="{% url 'events' %}" class="btn btn-ghost">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

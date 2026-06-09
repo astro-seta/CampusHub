@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard — CampusHub{% endblock %}
+
+{% block content %}
+
+<h1 class="page-title mb-1">Admin Dashboard</h1>
+<p class="page-subtitle">Full control over the platform</p>
+
+<!-- STATS -->
+<div class="grid grid-3 mb-6">
+    <div class="card" style="border-left:3px solid var(--warning);">
+        <p class="text-muted text-sm mb-1">Pending Clubs</p>
+        <p style="font-family:'Manrope',sans-serif; font-size:2rem; font-weight:800;">{{ pending_clubs.count }}</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--accent);">
+        <p class="text-muted text-sm mb-1">Total Clubs</p>
+        <p style="font-family:'Manrope',sans-serif; font-size:2rem; font-weight:800;">{{ all_clubs.count }}</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--accent2);">
+        <p class="text-muted text-sm mb-1">Total Users</p>
+        <p style="font-family:'Manrope',sans-serif; font-size:2rem; font-weight:800;">{{ all_users.count }}</p>
+    </div>
+</div>
+
+<!-- PENDING CLUBS -->
+<div class="card mb-4">
+    <h2 style="font-family:'Manrope',sans-serif; font-weight:700; font-size:1.1rem; margin-bottom:1rem;">
+        ⏳ Pending Club Approvals
+    </h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Club</th>
+                <th>Owner</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for club in pending_clubs %}
+            <tr>
+                <td style="font-weight:600;">{{ club.name }}</td>
+                <td class="text-muted">{{ club.owner.username }}</td>
+                <td class="text-muted text-sm">{{ club.description|truncatechars:60 }}</td>
+                <td>
+                    <div class="flex gap-2">
+                        <a href="{% url 'approve_club' club.id %}" class="btn btn-success btn-sm">Approve</a>
+                        <a href="{% url 'reject_club' club.id %}" class="btn btn-danger btn-sm">Reject</a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-muted text-sm" style="text-align:center; padding:2rem;">No pending clubs</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- ALL USERS -->
+<div class="card mb-4">
+    <h2 style="font-family:'Manrope',sans-serif; font-weight:700; font-size:1.1rem; margin-bottom:1rem;">
+        👥 User Management
+    </h2>
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in all_users %}
+            <tr>
+                <td style="font-weight:600;">{{ u.username }}</td>
+                <td class="text-muted text-sm">{{ u.email }}</td>
+                <td>
+                    <span class="badge {% if u.role == 'admin' %}badge-red{% elif u.role == 'club_manager' %}badge-purple{% else %}badge-blue{% endif %}" style="text-transform:capitalize;">
+                        {{ u.role }}
+                    </span>
+                </td>
+                <td>
+                    <div class="flex gap-2">
+                        <a href="{% url 'change_user_role' u.id %}" class="btn btn-ghost btn-sm">Change Role</a>
+                        <a href="{% url 'delete_user' u.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-muted text-sm" style="text-align:center; padding:2rem;">No users</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- ALL EVENTS -->
+<div class="card">
+    <h2 style="font-family:'Manrope',sans-serif; font-weight:700; font-size:1.1rem; margin-bottom:1rem;">
+        📅 All Events
+    </h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Event</th>
+                <th>Club</th>
+                <th>Date</th>
+                <th>Participants</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in all_events %}
+            <tr>
+                <td style="font-weight:600;">{{ event.title }}</td>
+                <td><span class="badge badge-purple">{{ event.club.name }}</span></td>
+                <td class="text-muted text-sm">{{ event.date|date:"M d, Y" }}</td>
+                <td>{{ event.participant_count }}/{{ event.max_participants }}</td>
+                <td>
+                    <div class="flex gap-2">
+                        <a href="{% url 'event_detail' event.id %}" class="btn btn-ghost btn-sm">View</a>
+                        <a href="{% url 'delete_event' event.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-muted text-sm" style="text-align:center; padding:2rem;">No events</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

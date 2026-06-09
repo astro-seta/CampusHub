@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}{{ event.title }} — CampusHub{% endblock %}
+
+{% block content %}
+
+<div style="max-width:720px; margin:0 auto;">
+    <span class="text-muted text-sm" style="cursor:pointer;" onclick="history.back()">← Back to Events</span>
+
+    <div class="card mt-4 mb-4" style="padding:2rem;">
+        <div class="flex items-center justify-between mb-4">
+            <span class="badge badge-purple">{{ event.club.name }}</span>
+            {% if event.is_full %}
+                <span class="badge badge-red">● Full</span>
+            {% else %}
+                <span class="badge badge-green">● Open</span>
+            {% endif %}
+        </div>
+
+        <h1 style="font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; letter-spacing:-0.02em; margin-bottom:1rem;">{{ event.title }}</h1>
+
+        <div class="flex gap-4 mb-4 text-sm text-muted">
+            <span>📅 {{ event.date|date:"F d, Y · H:i" }}</span>
+            <span>👥 {{ event.participant_count }} / {{ event.max_participants }} participants</span>
+            <span>👤 By {{ event.created_by.username }}</span>
+        </div>
+
+        <div class="divider"></div>
+        <p style="line-height:1.8; margin: 1.25rem 0;">{{ event.description }}</p>
+        <div class="divider"></div>
+
+        <div class="flex gap-3 mt-4">
+            {% if user.is_authenticated %}
+                {% if is_registered %}
+                    <span class="badge badge-green" style="padding:0.5rem 1rem;">✓ Registered</span>
+                    <a href="{% url 'cancel_registration' event.id %}" class="btn btn-danger">Cancel Registration</a>
+                {% elif event.is_full %}
+                    <span class="badge badge-red" style="padding:0.5rem 1rem;">Event is full</span>
+                {% else %}
+                    <a href="{% url 'register_event' event.id %}" class="btn btn-primary">Register for Event</a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary">Login to Register</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

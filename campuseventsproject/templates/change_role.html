@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Change Role — CampusHub{% endblock %}
+
+{% block content %}
+<div style="max-width:420px; margin:0 auto;">
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-ghost btn-sm mb-4">← Back to Dashboard</a>
+
+    <h1 class="page-title mb-1">Change User Role</h1>
+    <p class="page-subtitle">Update role for <strong>{{ target_user.username }}</strong></p>
+
+    <div class="card mb-3">
+        <div class="flex items-center gap-3">
+            <div style="width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:1.25rem; font-weight:800; color:white;">
+                {{ target_user.username|first|upper }}
+            </div>
+            <div>
+                <p style="font-weight:700;">{{ target_user.username }}</p>
+                <p class="text-muted text-sm">{{ target_user.email }}</p>
+                <span class="badge badge-blue mt-1" style="text-transform:capitalize;">Current: {{ target_user.role }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <form method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label>{{ field.label }}</label>
+                {{ field }}
+            </div>
+            {% endfor %}
+            <div class="divider"></div>
+            <div class="flex gap-3">
+                <button type="submit" class="btn btn-primary">Save Role</button>
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-ghost">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

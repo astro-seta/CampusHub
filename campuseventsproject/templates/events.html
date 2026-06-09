@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Events — CampusHub{% endblock %}
+
+{% block content %}
+
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="page-title">
+            {% if club %}Events — {{ club.name }}{% else %}All Events{% endif %}
+        </h1>
+        <p class="page-subtitle">Browse and register for campus events</p>
+    </div>
+    {% if user.role == 'club_manager' or user.role == 'admin' %}
+    <a href="{% url 'create_event' %}" class="btn btn-primary">+ New Event</a>
+    {% endif %}
+</div>
+
+{% if events %}
+<div class="grid grid-2">
+    {% for event in events %}
+    <div class="card" style="display:flex; flex-direction:column; gap:0.75rem;">
+        <div class="flex items-center justify-between">
+            <span class="badge badge-purple">{{ event.club.name }}</span>
+            {% if event.is_full %}
+                <span class="badge badge-red">Full</span>
+            {% else %}
+                <span class="badge badge-green">Open</span>
+            {% endif %}
+        </div>
+        <h3 style="font-family:'Syne',sans-serif; font-weight:700; font-size:1.1rem;">{{ event.title }}</h3>
+        <p class="text-muted text-sm" style="line-height:1.6;">{{ event.description|truncatechars:100 }}</p>
+        <div class="flex gap-3 text-sm text-muted">
+            <span>📅 {{ event.date|date:"M d, Y H:i" }}</span>
+            <span>👥 {{ event.participant_count }}/{{ event.max_participants }}</span>
+        </div>
+        <div class="flex gap-2" style="border-top:1px solid var(--border); padding-top:0.75rem;">
+            <a href="{% url 'event_detail' event.id %}" class="btn btn-ghost btn-sm" style="flex:1; justify-content:center;">Details</a>
+            {% if user.role == 'admin' or event.created_by == user %}
+            <a href="{% url 'delete_event' event.id %}" class="btn btn-danger btn-sm">Delete</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">📅</div>
+    <p>No events found. Check back later!</p>
+</div>
+{% endif %}
+
+{% endblock %}

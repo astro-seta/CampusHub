@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}{{ club.name }} — CampusHub{% endblock %}
+
+{% block content %}
+
+<div class="flex items-center gap-3 mb-6" style="cursor:pointer;" onclick="history.back()">
+    <span class="text-muted text-sm">← Back</span>
+</div>
+
+<div class="card mb-4" style="padding:2rem;">
+    <div class="flex items-center gap-4 mb-4">
+        {% if club.logo %}
+            <img src="{{ club.logo.url }}" style="width:72px; height:72px; border-radius:14px; object-fit:cover;">
+        {% else %}
+            <div style="width:72px; height:72px; border-radius:14px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:800; color:white; font-family:'Syne',sans-serif;">
+                {{ club.name|first|upper }}
+            </div>
+        {% endif %}
+        <div>
+            <h1 style="font-family:'Syne',sans-serif; font-size:1.75rem; font-weight:800; letter-spacing:-0.02em;">{{ club.name }}</h1>
+            <p class="text-muted text-sm">{{ club.member_count }} members · Managed by {{ club.owner.username }}</p>
+        </div>
+        <div style="margin-left:auto;">
+            {% if user.is_authenticated %}
+                {% if is_member %}
+                    <a href="{% url 'leave_club' club.id %}" class="btn btn-danger">Leave Club</a>
+                {% else %}
+                    <a href="{% url 'join_club' club.id %}" class="btn btn-success">Join Club</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="divider"></div>
+    <p style="line-height:1.8; color:var(--text);">{{ club.description }}</p>
+</div>
+
+<!-- EVENTS OF THIS CLUB -->
+<div class="flex items-center justify-between mb-3">
+    <h2 style="font-family:'Syne',sans-serif; font-size:1.25rem; font-weight:700;">Upcoming Events</h2>
+    {% if user.role == 'club_manager' and club.owner == user %}
+    <a href="{% url 'create_event' %}" class="btn btn-primary btn-sm">+ Add Event</a>
+    {% endif %}
+</div>
+
+<div class="grid grid-2">
+    {% for event in club.events.all %}
+    <div class="card">
+        <div class="flex items-center justify-between mb-2">
+            <span class="badge badge-blue">{{ event.date|date:"M d, Y" }}</span>
+            <span class="text-muted text-sm">{{ event.participant_count }}/{{ event.max_participants }}</span>
+        </div>
+        <h3 style="font-family:'Syne',sans-serif; font-weight:700; margin-bottom:0.4rem;">{{ event.title }}</h3>
+        <p class="text-muted text-sm mb-3">{{ event.description|truncatechars:80 }}</p>
+        <a href="{% url 'event_detail' event.id %}" class="btn btn-ghost btn-sm">View Event</a>
+    </div>
+    {% empty %}
+    <div class="card" style="grid-column:1/-1;">
+        <p class="text-muted text-sm">No events yet for this club.</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

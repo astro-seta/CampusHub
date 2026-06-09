@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Manager Dashboard — CampusHub{% endblock %}
+
+{% block content %}
+
+<h1 class="page-title mb-1">Manager Dashboard</h1>
+<p class="page-subtitle">Manage your clubs and events</p>
+
+<!-- MY CLUBS -->
+<div class="flex items-center justify-between mb-3">
+    <h2 style="font-family:'Manrope',sans-serif; font-size:1.1rem; font-weight:700;">My Clubs</h2>
+    <a href="{% url 'create_club' %}" class="btn btn-primary btn-sm">+ New Club</a>
+</div>
+
+<div class="grid grid-3 mb-6">
+    {% for club in my_clubs %}
+    <div class="card">
+        <div class="flex items-center gap-3 mb-3">
+            {% if club.logo %}
+                <img src="{{ club.logo.url }}" style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
+            {% else %}
+                <div style="width:40px; height:40px; border-radius:8px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-weight:800; color:white;">
+                    {{ club.name|first|upper }}
+                </div>
+            {% endif %}
+            <div>
+                <h3 style="font-family:'Manrope',sans-serif; font-weight:700; font-size:0.95rem;">{{ club.name }}</h3>
+                {% if club.is_approved %}
+                    <span class="badge badge-green" style="font-size:0.7rem;">Approved</span>
+                {% else %}
+                    <span class="badge badge-yellow" style="font-size:0.7rem;">Pending Approval</span>
+                {% endif %}
+            </div>
+        </div>
+        <p class="text-muted text-sm mb-3">{{ club.member_count }} members</p>
+        <div class="flex gap-2">
+            <a href="{% url 'club_detail' club.id %}" class="btn btn-ghost btn-sm">View</a>
+            <a href="{% url 'edit_club' club.id %}" class="btn btn-ghost btn-sm">Edit</a>
+            <a href="{% url 'club_members' club.id %}" class="btn btn-ghost btn-sm">Members</a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="card" style="grid-column:1/-1;">
+        <p class="text-muted text-sm">You haven't created any clubs yet. <a href="{% url 'create_club' %}" style="color:var(--accent);">Create one</a></p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- MY EVENTS -->
+<div class="flex items-center justify-between mb-3">
+    <h2 style="font-family:'Manrope',sans-serif; font-size:1.1rem; font-weight:700;">My Events</h2>
+    <a href="{% url 'create_event' %}" class="btn btn-primary btn-sm">+ New Event</a>
+</div>
+
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Event</th>
+                <th>Club</th>
+                <th>Date</th>
+                <th>Participants</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in my_events %}
+            <tr>
+                <td style="font-weight:600;">{{ event.title }}</td>
+                <td><span class="badge badge-purple">{{ event.club.name }}</span></td>
+                <td class="text-muted text-sm">{{ event.date|date:"M d, Y H:i" }}</td>
+                <td>
+                    <span class="{% if event.is_full %}badge badge-red{% else %}badge badge-green{% endif %}">
+                        {{ event.participant_count }}/{{ event.max_participants }}
+                    </span>
+                </td>
+                <td>
+                    <div class="flex gap-2">
+                        <a href="{% url 'event_detail' event.id %}" class="btn btn-ghost btn-sm">View</a>
+                        <a href="{% url 'edit_event' event.id %}" class="btn btn-ghost btn-sm">Edit</a>
+                        <a href="{% url 'delete_event' event.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-muted text-sm" style="text-align:center; padding:2rem;">No events yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

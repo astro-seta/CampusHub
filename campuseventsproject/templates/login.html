@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Login — CampusHub{% endblock %}
+
+{% block content %}
+<div style="max-width:420px; margin:3rem auto;">
+    <div style="text-align:center; margin-bottom:2rem;">
+        <h1 style="font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; letter-spacing:-0.03em;">Welcome back</h1>
+        <p class="text-muted text-sm mt-2">Sign in to your CampusHub account</p>
+    </div>
+
+    <div class="card">
+        <form method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label>{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <p style="color:var(--danger); font-size:0.8rem; margin-top:0.3rem;">{{ field.errors.0 }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:0.75rem; margin-top:0.5rem;">Login</button>
+        </form>
+        <div class="divider"></div>
+        <p class="text-sm text-muted" style="text-align:center;">
+            No account? <a href="{% url 'signup' %}" style="color:var(--accent);">Sign up</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

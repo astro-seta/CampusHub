@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}CampusHub — Home{% endblock %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<div style="margin-bottom: 2.5rem;">
+    <p class="text-muted text-sm mb-1">Welcome back,</p>
+    <h1 class="page-title">{{ user.username }} 👋</h1>
+    <p class="page-subtitle">Here's what's happening on campus today.</p>
+</div>
+
+<div class="grid grid-3 mb-6">
+    <div class="card" style="border-left: 3px solid var(--accent);">
+        <p class="text-muted text-sm mb-2">Your Clubs</p>
+        <p style="font-family:'Syne',sans-serif; font-size:2rem; font-weight:800;">{{ user.joined_clubs.count }}</p>
+    </div>
+    <div class="card" style="border-left: 3px solid var(--accent2);">
+        <p class="text-muted text-sm mb-2">Role</p>
+        <p style="font-family:'Syne',sans-serif; font-size:1.25rem; font-weight:800; text-transform:capitalize;">{{ user.role }}</p>
+    </div>
+    <div class="card" style="border-left: 3px solid var(--success);">
+        <p class="text-muted text-sm mb-2">Quick Actions</p>
+        <div class="flex gap-2">
+            <a href="{% url 'clubs' %}" class="btn btn-primary btn-sm">Browse Clubs</a>
+            <a href="{% url 'events' %}" class="btn btn-ghost btn-sm">Events</a>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div style="text-align:center; padding: 5rem 2rem 4rem;">
+    <div style="display:inline-block; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); border-radius: 20px; padding: 0.3rem 1rem; font-size:0.8rem; color:var(--accent); font-weight:600; margin-bottom:1.5rem; letter-spacing:0.05em;">
+        CAMPUS EVENT & CLUB PLATFORM
+    </div>
+    <h1 style="font-family:'Syne',sans-serif; font-size:3.5rem; font-weight:800; letter-spacing:-0.04em; line-height:1.1; margin-bottom:1.25rem;">
+        Connect. Join.<br>
+        <span style="background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Experience Campus.</span>
+    </h1>
+    <p style="color:var(--muted); font-size:1.1rem; max-width:520px; margin:0 auto 2.5rem;">
+        Discover clubs, attend events, and make the most of your university life — all in one place.
+    </p>
+    <div class="flex gap-3" style="justify-content:center;">
+        <a href="{% url 'signup' %}" class="btn btn-primary" style="padding:0.75rem 2rem; font-size:1rem;">Get Started</a>
+        <a href="{% url 'login' %}" class="btn btn-ghost" style="padding:0.75rem 2rem; font-size:1rem;">Login</a>
+    </div>
+</div>
+{% endif %}
+
+<!-- UPCOMING EVENTS -->
+<div class="flex items-center justify-between mb-3" style="margin-top:2rem;">
+    <h2 style="font-family:'Syne',sans-serif; font-size:1.25rem; font-weight:700;">Upcoming Events</h2>
+    <a href="{% url 'events' %}" class="btn btn-ghost btn-sm">View All →</a>
+</div>
+
+{% if upcoming_events %}
+<div class="grid grid-3 mb-6">
+    {% for event in upcoming_events %}
+    <div class="card">
+        <div class="flex items-center justify-between mb-2">
+            <span class="badge badge-purple">{{ event.club.name }}</span>
+            <span class="text-muted text-sm">{{ event.date|date:"M d" }}</span>
+        </div>
+        <h3 style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; margin-bottom:0.4rem;">{{ event.title }}</h3>
+        <p class="text-muted text-sm mb-3">{{ event.description|truncatechars:70 }}</p>
+        <div class="flex items-center justify-between">
+            <span class="text-sm text-muted">👥 {{ event.participant_count }}/{{ event.max_participants }}</span>
+            <a href="{% url 'event_detail' event.id %}" class="btn btn-ghost btn-sm">Details</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card mb-6">
+    <p class="text-muted text-sm">No upcoming events yet.</p>
+</div>
+{% endif %}
+
+<!-- POPULAR CLUBS -->
+<div class="flex items-center justify-between mb-3">
+    <h2 style="font-family:'Syne',sans-serif; font-size:1.25rem; font-weight:700;">Popular Clubs</h2>
+    <a href="{% url 'clubs' %}" class="btn btn-ghost btn-sm">View All →</a>
+</div>
+
+{% if popular_clubs %}
+<div class="grid grid-3">
+    {% for club in popular_clubs %}
+    <div class="card" style="display:flex; align-items:center; gap:1rem;">
+        {% if club.logo %}
+            <img src="{{ club.logo.url }}" style="width:48px; height:48px; border-radius:10px; object-fit:cover; flex-shrink:0;">
+        {% else %}
+            <div style="width:48px; height:48px; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:1.25rem; font-weight:800; color:white; font-family:'Syne',sans-serif; flex-shrink:0;">
+                {{ club.name|first|upper }}
+            </div>
+        {% endif %}
+        <div style="flex:1; min-width:0;">
+            <h3 style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ club.name }}</h3>
+            <p class="text-muted text-sm">{{ club.member_count }} members</p>
+        </div>
+        <a href="{% url 'club_detail' club.id %}" class="btn btn-ghost btn-sm">View</a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <p class="text-muted text-sm">No clubs yet.</p>
+</div>
+{% endif %}
+
+{% endblock %}
